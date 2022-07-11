@@ -15,7 +15,7 @@ MonoBehaviour:
   state: 6
   prefab: HammerBros
   soundEffect: 16
-  spawnChance: 100
+  spawnChance: 1
   losingSpawnBonus: 1.5
   big: 0
   vertical: 0
