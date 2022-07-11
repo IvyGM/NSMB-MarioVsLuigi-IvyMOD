@@ -708,6 +708,43 @@ public class PlayerController : MonoBehaviourPun, IFreezableEntity, ICustomSeria
             animator.SetTrigger("fireball");
             break;
         }
+        case Enums.PowerupState.HammerBros:
+            {
+                   if (wallSlideLeft || wallSlideRight || groundpound || triplejump || flying || drill || crouching || sliding)
+                        return;
+
+                    int count = 0;
+                    foreach (HammerMover existingHammer in FindObjectsOfType<HammerMover>())
+                    {
+                        if (existingHammer.photonView.IsMine && ++count >= 6)
+                            return;
+                    }
+
+                    if (count <= 2)
+                    {
+                        fireballTimer = 2.5f;
+                        canShootProjectile = count == 0;
+                    }
+                    else if (fireballTimer <= 0)
+                    {
+                        fireballTimer = 2.5f;
+                        canShootProjectile = true;
+                    }
+                    else if (canShootProjectile)
+                    {
+                        canShootProjectile = false;
+                    }
+                    else
+                    {
+                        return;
+                    }
+                    Enums.Sounds sound = Enums.Sounds.Powerup_BlueShell_Enter;
+                    Vector2 pos = body.position + new Vector2(facingRight ^ animator.GetCurrentAnimatorStateInfo(0).IsName("turnaround") ? 0.5f : -0.5f, 1f);
+                    PhotonNetwork.Instantiate($"Prefabs/Hammer", pos, Quaternion.identity, 0, new object[] { !facingRight ^ animator.GetCurrentAnimatorStateInfo(0).IsName("turnaround") });
+                   photonView.RPC("PlaySound", RpcTarget.All, sound);
+                    animator.SetTrigger("fireball");
+                    break;
+                }
         case Enums.PowerupState.PropellerMushroom: {
             if (groundpound || (flying && drill) || propeller || sliding || wallJumpTimer > 0)
                 return;
@@ -888,6 +925,7 @@ public class PlayerController : MonoBehaviourPun, IFreezableEntity, ICustomSeria
         }
         case Enums.PowerupState.FireFlower:
         case Enums.PowerupState.IceFlower:
+        case Enums.PowerupState.HammerBros:
         case Enums.PowerupState.PropellerMushroom:
         case Enums.PowerupState.BlueShell: {
             state = Enums.PowerupState.Mushroom;
@@ -1671,7 +1709,7 @@ public class PlayerController : MonoBehaviourPun, IFreezableEntity, ICustomSeria
         crouching = ((onGround && crouchInput && !groundpound) || (!onGround && crouchInput && crouching) || (state != Enums.PowerupState.BlueShell && crouching && ForceCrouchCheck())) && !holding;
         if (crouching && !prevCrouchState) {
             //crouch start sound
-            photonView.RPC("PlaySound", RpcTarget.All, state == Enums.PowerupState.BlueShell ? Enums.Sounds.Powerup_BlueShell_Enter : Enums.Sounds.Player_Sound_Crouch);
+            photonView.RPC("PlaySound", RpcTarget.All, (state == Enums.PowerupState.BlueShell || state == Enums.PowerupState.HammerBros) ? Enums.Sounds.Powerup_BlueShell_Enter : Enums.Sounds.Player_Sound_Crouch);
         }
     }
 
@@ -1893,7 +1931,7 @@ public class PlayerController : MonoBehaviourPun, IFreezableEntity, ICustomSeria
         if (Mathf.Abs(body.velocity.x) < 0.5f || !onGround)
             skidding = false;
 
-        if (inShell) {
+        if (inShell && state != Enums.PowerupState.HammerBros) {
             body.velocity = new(runningMaxSpeed * 0.9f * (facingRight ? 1 : -1) * (1f - slowdownTimer), body.velocity.y);
             return;
         }
@@ -1901,7 +1939,7 @@ public class PlayerController : MonoBehaviourPun, IFreezableEntity, ICustomSeria
         if (!(left ^ right))
             return;
 
-        if (crouching && state == Enums.PowerupState.BlueShell)
+        if (crouching && (state == Enums.PowerupState.BlueShell || state == Enums.PowerupState.HammerBros))
             return;
 
         float airPenalty = onGround ? 1 : 0.5f;

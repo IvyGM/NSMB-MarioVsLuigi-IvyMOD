@@ -131,7 +131,7 @@ public class KoopaWalk : HoldableEntity {
         if (holder)
             return;
 
-        if (!attackedFromAbove && player.state == Enums.PowerupState.BlueShell && player.crouching && !player.inShell) {
+        if (!attackedFromAbove && (player.state == Enums.PowerupState.BlueShell || player.state == Enums.PowerupState.HammerBros) && player.crouching && !player.inShell) {
             player.body.velocity = new(0, player.body.velocity.y);
             photonView.RPC("SetLeft", RpcTarget.All, damageDirection.x > 0);
         } else if (player.sliding || player.inShell || player.invincible > 0 || player.state == Enums.PowerupState.MegaMushroom || player.drill) {

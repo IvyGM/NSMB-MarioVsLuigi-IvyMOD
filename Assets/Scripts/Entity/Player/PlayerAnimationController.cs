@@ -12,7 +12,7 @@ public class PlayerAnimationController : MonoBehaviourPun {
 
     [SerializeField] Material glowMaterial;
 
-    [SerializeField] GameObject models, smallModel, largeModel, largeShellExclude, blueShell, propellerHelmet, propeller;
+    [SerializeField] GameObject models, smallModel, largeModel, largeShellExclude, hammerSuit, blueShell, propellerHelmet, propeller;
     [SerializeField] ParticleSystem dust, sparkles, drillParticle, giantParticle, fireParticle;
     [SerializeField] float blinkDuration = 0.1f, pipeDuration = 2f, heightSmallModel = 0.46f, heightLargeModel = 0.82f, deathUpTime = 0.6f, deathForce = 7f;
     [SerializeField] Avatar smallAvatar, largeAvatar;
@@ -217,7 +217,7 @@ public class PlayerAnimationController : MonoBehaviourPun {
             animator.SetBool("blueshell", controller.state == Enums.PowerupState.BlueShell);
             animator.SetBool("mini", controller.state == Enums.PowerupState.MiniMushroom);
             animator.SetBool("mega", controller.state == Enums.PowerupState.MegaMushroom);
-            animator.SetBool("inShell", controller.inShell || (controller.state == Enums.PowerupState.BlueShell && (controller.crouching || (controller.groundpound && controller.groundpoundStartTimer <= 0.2f))));
+            animator.SetBool("inShell", controller.inShell || (((controller.state == Enums.PowerupState.BlueShell) || (controller.state == Enums.PowerupState.HammerBros)) && (controller.crouching || (controller.groundpound && controller.groundpoundStartTimer <= 0.2f))));
         } else {
             //controller.wallSlideLeft = animator.GetBool("onLeft");
             //controller.wallSlideRight = animator.GetBool("onRight");
@@ -285,6 +285,7 @@ public class PlayerAnimationController : MonoBehaviourPun {
         largeModel.SetActive(large);
         smallModel.SetActive(!large);
         blueShell.SetActive(controller.state == Enums.PowerupState.BlueShell);
+        hammerSuit.SetActive(controller.state == Enums.PowerupState.HammerBros);
 
         largeShellExclude.SetActive(!animator.GetCurrentAnimatorStateInfo(0).IsName("in-shell"));
         propellerHelmet.SetActive(controller.state == Enums.PowerupState.PropellerMushroom);

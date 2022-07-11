@@ -10,16 +10,15 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ea796f302b1a91d478efc94e21899d8d, type: 3}
-  m_Name: MegaMushroom
+  m_Name: HammerBros
   m_EditorClassIdentifier: 
-  state: 9
-  prefab: MegaMushroom
-  soundEffect: 40
-  spawnChance: 0
-  losingSpawnBonus: 2
-  big: 1
+  state: 6
+  prefab: HammerBros
+  soundEffect: 16
+  spawnChance: 100
+  losingSpawnBonus: 1.5
+  big: 0
   vertical: 0
-  custom: 0
+  custom: 1
   lives: 0
-  reserveSprite: {fileID: 2690215448161037315, guid: a87d3b028baa82640b06b88398a8c4f0,
-    type: 3}
+  reserveSprite: {fileID: -14430133, guid: a87d3b028baa82640b06b88398a8c4f0, type: 3}

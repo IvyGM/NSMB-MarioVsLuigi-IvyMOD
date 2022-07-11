@@ -51,7 +51,7 @@ public abstract class KillableEntity : MonoBehaviourPun, IFreezableEntity {
         Vector2 damageDirection = (player.body.position - body.position).normalized;
         bool attackedFromAbove = Vector2.Dot(damageDirection, Vector2.up) > 0.5f && !player.onGround;
 
-        if (!attackedFromAbove && player.state == Enums.PowerupState.BlueShell && player.crouching && !player.inShell) {
+        if (!attackedFromAbove && (player.state == Enums.PowerupState.BlueShell || player.state == Enums.PowerupState.HammerBros) && player.crouching && !player.inShell) {
             photonView.RPC("SetLeft", RpcTarget.All, damageDirection.x > 0);
         } else if (player.invincible > 0 || player.inShell || player.sliding
             || ((player.groundpound || player.drill) && player.state != Enums.PowerupState.MiniMushroom && attackedFromAbove)
