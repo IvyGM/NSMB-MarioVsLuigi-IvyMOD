@@ -540,38 +540,73 @@ public class PlayerController : MonoBehaviourPun, IFreezableEntity, ICustomSeria
         GameObject obj = collider.gameObject;
         switch (obj.tag) {
         case "Fireball": {
-            FireballMover fireball = obj.GetComponentInParent<FireballMover>();
-            if (fireball.photonView.IsMine || hitInvincibilityCounter > 0)
-                return;
+            if (obj.GetComponentInParent<FireballMover>() != null)
+            {
+                FireballMover fireball = obj.GetComponentInParent<FireballMover>();
+                if (fireball.photonView.IsMine || hitInvincibilityCounter > 0)
+                    return;
 
-            fireball.photonView.RPC("Kill", RpcTarget.All);
+                fireball.photonView.RPC("Kill", RpcTarget.All);
 
-            if (knockback || invincible > 0 || state == Enums.PowerupState.MegaMushroom)
-                return;
+                if (knockback || invincible > 0 || state == Enums.PowerupState.MegaMushroom)
+                    return;
 
-            if (state == Enums.PowerupState.BlueShell && (inShell || crouching || groundpound)) {
-                if (fireball.isIceball) {
-                    //slowdown
-                    slowdownTimer = 0.3f;
-                }
-                return;
-            }
-
-            if (state == Enums.PowerupState.MiniMushroom) {
-                photonView.RPC("Powerdown", RpcTarget.All, false);
-                return;
-            }
-
-            if (!fireball.isIceball) {
-                photonView.RPC("Knockback", RpcTarget.All, fireball.left, 1, true, fireball.photonView.ViewID);
-            } else {
-                if (!Frozen && !frozenObject && !pipeEntering) {
-                    GameObject cube = PhotonNetwork.Instantiate("Prefabs/FrozenCube", transform.position, Quaternion.identity, 0, new object[] { photonView.ViewID });
-                    frozenObject = cube.GetComponent<FrozenCube>();
+                if (state == Enums.PowerupState.BlueShell && (inShell || crouching || groundpound))
+                {
+                    if (fireball.isIceball)
+                    {
+                        //slowdown
+                        slowdownTimer = 0.3f;
+                    }
                     return;
                 }
+
+                if (state != Enums.PowerupState.MiniMushroom)
+                {
+                    photonView.RPC("Powerdown", RpcTarget.All, false);
+                    return;
+                }
+
+                if (!fireball.isIceball)
+                {
+                    photonView.RPC("Knockback", RpcTarget.All, fireball.left, 1, true, fireball.photonView.ViewID);
+                }
+                else
+                {
+                    if (!Frozen && !frozenObject && !pipeEntering)
+                    {
+                        GameObject cube = PhotonNetwork.Instantiate("Prefabs/FrozenCube", transform.position, Quaternion.identity, 0, new object[] { photonView.ViewID });
+                        frozenObject = cube.GetComponent<FrozenCube>();
+                        return;
+                    }
+                }
+                break;
             }
-            break;
+            else
+            {
+                HammerMover fireball = obj.GetComponentInParent<HammerMover>();
+                if (fireball.photonView.IsMine || hitInvincibilityCounter > 0)
+                    return;
+
+                fireball.photonView.RPC("Kill", RpcTarget.All);
+
+                if (knockback || invincible > 0 || state == Enums.PowerupState.MegaMushroom)
+                    return;
+
+                if (state == Enums.PowerupState.BlueShell && (inShell || crouching || groundpound))
+                {
+                    return;
+                }
+
+                if (state != Enums.PowerupState.MiniMushroom)
+                {
+                    photonView.RPC("Powerdown", RpcTarget.All, false);
+                    return;
+                }
+                photonView.RPC("Knockback", RpcTarget.All, fireball.left, 1, true, fireball.photonView.ViewID);
+                break;
+            }
+            
         }
         case "lava":
         case "poison": {
